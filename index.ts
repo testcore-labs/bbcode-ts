@@ -1,3 +1,5 @@
+import xss from "xss";
+
 class bbcode {
   opening: string;
   closing: string;
@@ -59,7 +61,7 @@ class bbcode {
     const param_rgx = /(\w+)\s*=\s*("[^"]*"|\w+)/g;
     let match;
     while((match = param_rgx.exec(params_str)) !== null) {
-      params[match[1]] = match[2].replace(/"/g, '');
+      params[match[1]] = xss(match[2].replace(/"/g, ''));
     }
     return params;
   }
@@ -95,7 +97,7 @@ class bbcode {
       console.log(tag);
       if(tag) {
         // await is for potential async funcs
-        const replacement = tag.func(content, params);
+        const replacement = tag.func(xss(content), params);
         result = result.replace(full_match, replacement);
       }
     });

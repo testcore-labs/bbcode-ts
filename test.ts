@@ -12,6 +12,6 @@ bbcode_.custom_tag("rainbow", "makes text look like a rainbow", (txt: string) =>
   return color_text;
 });
 const text = "[b]im bold[/b] and [i]im italic[/i] along with [c color=\"#fff\" ishouldntbe=parsed]colorful[/c] [rainbow]textttt[/rainbow]";
-const res = await bbcode_.parse(text);
+const res = bbcode_.parse(text);
 
 console.log(res);
