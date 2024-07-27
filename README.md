@@ -2,8 +2,9 @@
 bbcode parser written in Typescript.
 
 ## how to install
-since i dont have a npm package set up for this library you can only get it from github.\
-run `bun add github:testcore-labs/bbcode-ts`
+run `bun add github:testcore-labs/bbcode-ts` to add via bun (preffered) 
+OR
+run `npm install bbcode-ts` to install via npm
 
 ## how to use
 first you have to import bbcode, then init a new `bbcode` class
