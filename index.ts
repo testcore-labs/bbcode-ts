@@ -88,15 +88,13 @@ class bbcode {
     return results;
   }
 
-  parse(text: string) {
+  parse(text: string, allowed_tags = ["b", "i"]) {
     let parsed_text = this.parser(text);
     let result = text;
     
     parsed_text.forEach(({ full_match, tag_name, content, params }) => {
       const tag = this.tags[tag_name.toLowerCase()];
-      console.log(tag);
-      if(tag) {
-        // await is for potential async funcs
+      if(tag && allowed_tags.indexOf(tag_name)) {
         const replacement = tag.func(xss(content), params);
         result = result.replace(full_match, replacement);
       }
