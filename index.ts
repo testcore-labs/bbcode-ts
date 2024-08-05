@@ -5,7 +5,8 @@ class bbcode {
   closing: string;
   tag_name_rgx: string;
 
-  tags: Record<string, { desc: string, func: (txt: string, params: {[key: string]: string}) => string }>;
+  tags: Record<string, { desc: string, example: string, func: (txt: string, params: {[key: string]: string}) => string }>;
+  allowed_tags: string[];
 
 
   constructor(opening = "[", closing = "]") {
@@ -15,35 +16,92 @@ class bbcode {
     this.tags = {
       "b": {
         desc: "makes text bold",
+        example: "",
         func: (txt: string) => `<b>${txt}</b>`
       },
       "i": {
         desc: "makes text italic",
+        example: "",
         func: (txt: string) => `<i>${txt}</i>`
+      },
+      "d": {
+        desc: "makes text have a strike through it",
+        example: "",
+        func: (txt: string) => `<del>${txt}</del>`
+      },
+      "u": {
+        desc: "makes text have an underline",
+        example: "",
+        func: (txt: string) => `<ins>${txt}</ins>`
+      },
+      "a": {
+        desc: "makes a link",
+        example: "",
+        func: (txt: string, params) => {
+          let url = params["url"] || "";
+          return `<a href="${ url }">${txt}</a>`
+        }
+      },
+      "img": {
+        desc: "makes a link",
+        example: "",
+        func: (txt: string, params) => {
+          let img = params["src"] || "";
+          return `<img src="${ img }" alt="${txt}">`
+        }
       },
       "c": {
         desc: "makes text colorful",
+        example: "",
         func: (txt: string, params) => {
           let color = params["color"] || "";
           return `<span style="color: ${color};">${txt}</span>`;
         }
       }
     };
+    this.allowed_tags = Object.keys(this.tags);
   }
 
-  custom_tag(name: string, desc: string, fn: (txt: string, params: {[key: string]: string}) => string) {
+  private tagify_example(example: string) {
+    example.replaceAll("[", this.opening);
+    example.replaceAll("]", this.closing);
+    return example;
+  }
+
+  /**
+  * adds a custom tag
+  */
+  custom_tag(name: string, desc: string, fn: (txt: string, params: {[key: string]: string}) => string, example: string) {
     if(this.tags[name]) {
       return new Error("name is already taken for custom tag");
     } else {
       this.tags[name] = {
         desc: desc,
+        example: example,
         func: fn
       }
       return true;
     }
   }
+  
+  /**
+  * gets all tags that are allowed from `this.allowed_tags` in `this.tags`
+  */
+  get_tags() {
+    let sorted_tags: Record<string, { desc: string, example: string, func: (txt: string, params: {[key: string]: string}) => string }> = {};
+    Object.entries(this.allowed_tags).forEach(([_tag_key, tag_value]) => {
+      if(this.tags[tag_value]) {
+        sorted_tags[tag_value] = this.tags[tag_value];
+      }
+    });
 
-  get_regex() {
+    Object.entries(sorted_tags).forEach(([tag_key, tag]) => {
+      tag.example = this.tagify_example(tag.example);
+    })
+    return sorted_tags;
+  }
+
+  private get_regex() {
     const open_tag = `\\${this.opening}`;
     const close_tag = `\\${this.closing}`;
     const tag_name_rgx = `(${this.tag_name_rgx})`
@@ -56,7 +114,7 @@ class bbcode {
     return new RegExp(`${open_tag_rgx}${content_rgx}${close_tag_rgx}`, 'gs');
   }
   
-  parse_params(params_str: string) {
+  private parse_params(params_str: string) {
     const params: Record<string, string> = {};
     const param_rgx = /(\w+)\s*=\s*("[^"]*"|\w+)/g;
     let match;
@@ -66,7 +124,7 @@ class bbcode {
     return params;
   }
 
-  parser(text: string) {
+  private parser(text: string) {
     const regex = this.get_regex();
     let match;
     const results = [];
@@ -88,13 +146,16 @@ class bbcode {
     return results;
   }
 
-  parse(text: string, allowed_tags = ["b", "i"]) {
+  /**
+  * parses BBCode and returns a value (primarily HTML)
+  */
+  parse(text: string) {
     let parsed_text = this.parser(text);
     let result = text;
     
     parsed_text.forEach(({ full_match, tag_name, content, params }) => {
       const tag = this.tags[tag_name.toLowerCase()];
-      if(tag && allowed_tags.indexOf(tag_name)) {
+      if(tag && this.allowed_tags.indexOf(tag_name)) {
         const replacement = tag.func(xss(content), params);
         result = result.replace(full_match, replacement);
       }
