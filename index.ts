@@ -16,27 +16,27 @@ class bbcode {
     this.tags = {
       "b": {
         desc: "makes text bold",
-        example: "",
+        example: "[b]text[/b]",
         func: (txt: string) => `<b>${txt}</b>`
       },
       "i": {
         desc: "makes text italic",
-        example: "",
+        example: "[i]text[/i]",
         func: (txt: string) => `<i>${txt}</i>`
       },
       "d": {
         desc: "makes text have a strike through it",
-        example: "",
+        example: "[d]text[/d]",
         func: (txt: string) => `<del>${txt}</del>`
       },
       "u": {
         desc: "makes text have an underline",
-        example: "",
+        example: "[u]text[/u]",
         func: (txt: string) => `<ins>${txt}</ins>`
       },
       "a": {
         desc: "makes a link",
-        example: "",
+        example: "[a url=\"//domain.com/\"]text[/a]",
         func: (txt: string, params) => {
           let url = params["url"] || "";
           return `<a href="${ url }">${txt}</a>`
@@ -44,7 +44,7 @@ class bbcode {
       },
       "img": {
         desc: "makes a link",
-        example: "",
+        example: "[img src=\"//domain.com/image.png\"]text[/img]",
         func: (txt: string, params) => {
           let img = params["src"] || "";
           return `<img src="${ img }" alt="${txt}">`
@@ -52,7 +52,7 @@ class bbcode {
       },
       "c": {
         desc: "makes text colorful",
-        example: "",
+        example: "[c color=\"#000000\"]text[/c]",
         func: (txt: string, params) => {
           let color = params["color"] || "";
           return `<span style="color: ${color};">${txt}</span>`;
