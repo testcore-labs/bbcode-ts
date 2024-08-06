@@ -155,7 +155,8 @@ class bbcode {
     
     parsed_text.forEach(({ full_match, tag_name, content, params }) => {
       const tag = this.tags[tag_name.toLowerCase()];
-      if(tag && this.allowed_tags.indexOf(tag_name)) {
+      // js is actually stupid WHAT??
+      if(tag && (this.allowed_tags.indexOf(tag_name) > -1)) {
         const replacement = tag.func(xss(content), params);
         result = result.replace(full_match, replacement);
       }
