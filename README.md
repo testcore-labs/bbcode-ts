@@ -11,7 +11,7 @@ first you have to import bbcode, then init a new `bbcode` class
 ```ts
 import bbcode from "bbcode-ts";
 
-const bbcode_ = newbbcode("[", "]"); // custom brackets
+const bbcode_ = new bbcode("[", "]"); // custom brackets
 
 // there are currently 3 built in tags: b (bold), i (italic, and c (color)
 console.log(bbcode_.parse("[b]im bold[/b]");
